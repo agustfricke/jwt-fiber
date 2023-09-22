@@ -14,7 +14,7 @@ import (
 )
 
 func SignUp(c *fiber.Ctx) error {
-	var payload *models.User
+	var payload *models.SignUpInput
   db := database.DB
 
 	if err := c.BodyParser(&payload); err != nil {
@@ -46,7 +46,7 @@ func SignUp(c *fiber.Ctx) error {
 
 
 func SignIn(c *fiber.Ctx) error {
-	var payload *models.User
+	var payload *models.SignInInput
   db := database.DB
 
 	if err := c.BodyParser(&payload); err != nil {
