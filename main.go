@@ -3,21 +3,25 @@ package main
 import (
 	"log"
 
+	"github.com/agustfricke/fiber-jwt-auth/database"
+	"github.com/agustfricke/fiber-jwt-auth/router"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func main() {
+  database.ConnectDB()
+
 	app := fiber.New()
 
-	app.Use(logger.New())
+  app.Use(cors.New(cors.Config{
+      AllowOrigins: "http://localhost:5173",
+      AllowMethods: "GET, POST, PUT, DELETE",
+      AllowCredentials: true,
+      AllowHeaders: "Origin, Content-Type, Accept",
+  }))
 
-	app.Get("/api", func(c *fiber.Ctx) error {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"status":  "success",
-			"message": "Fiber JWT authentication",
-		})
-	})
+  router.SetupRoutes(app)
 
-	log.Fatal(app.Listen(":8000"))
+  log.Fatal(app.Listen(":8000"))
 }
