@@ -8,9 +8,9 @@ import (
 )
 
 func Config(key string) string {
-    err := godotenv.Load(".env")
-    if err != nil {
-        fmt.Print("Error loading .env file")
-    }
-    return os.Getenv(key)
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Print("Error al cargar el archivo .env")
+	}
+	return os.Getenv(key)
 }

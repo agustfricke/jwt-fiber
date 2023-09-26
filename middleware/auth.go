@@ -22,33 +22,32 @@ func DeserializeUser(c *fiber.Ctx) error {
 	}
 
 	if tokenString == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": "You are not logged in"})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": "No has iniciado sesión"})
 	}
 
 	tokenByte, err := jwt.Parse(tokenString, func(jwtToken *jwt.Token) (interface{}, error) {
 		if _, ok := jwtToken.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %s", jwtToken.Header["alg"])
+			return nil, fmt.Errorf("método de firma inesperado: %s", jwtToken.Header["alg"])
 		}
 
-    return []byte(config.Config("SECRET_KEY")), nil
+		return []byte(config.Config("SECRET_KEY")), nil
 	})
 
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": fmt.Sprintf("invalidate token: %v", err)})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": fmt.Sprintf("token inválido: %v", err)})
 	}
 
 	claims, ok := tokenByte.Claims.(jwt.MapClaims)
 	if !ok || !tokenByte.Valid {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": "invalid token claim"})
-
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "fail", "message": "reclamo de token inválido"})
 	}
 
 	var user models.User
-  db := database.DB
+	db := database.DB
 	db.First(&user, "id = ?", fmt.Sprint(claims["sub"]))
 
 	if float64(user.ID) != claims["sub"] {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "the user belonging to this token no logger exists"})
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"status": "fail", "message": "el usuario al que pertenece este token ya no existe"})
 	}
 
 	c.Locals("user", &user)

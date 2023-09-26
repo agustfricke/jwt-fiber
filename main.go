@@ -10,18 +10,18 @@ import (
 )
 
 func main() {
-  database.ConnectDB()
+	database.ConnectDB()
 
 	app := fiber.New()
 
-  app.Use(cors.New(cors.Config{
-      AllowOrigins: "http://localhost:5173",
-      AllowMethods: "GET, POST, PUT, DELETE",
-      AllowCredentials: true,
-      AllowHeaders: "Origin, Content-Type, Accept",
-  }))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:5173",
+		AllowMethods:     "GET, POST",
+		AllowCredentials: true,
+		AllowHeaders:     "Origin, Content-Type, Accept",
+	}))
 
-  router.SetupRoutes(app)
+	router.SetupRoutes(app)
 
-  log.Fatal(app.Listen(":8000"))
+	log.Fatal(app.Listen(":8000"))
 }
